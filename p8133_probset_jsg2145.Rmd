@@ -1,0 +1,103 @@
+---
+title: "p8133_probset_jsg2145"
+author: "Jared Garfinkel"
+date: "9/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+library(haven)
+library(readxl)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	message = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+# Problem 1
+
+Given:
+
+H_0 = 0
+H_1 = -10
+variance = 20
+
+
+The power and type I error rate are needed to calculate the sample size.
+
+We assume that the change in LDL is due to the medication and not some outside factor.
+
+n = $$\frac{2(z_{\alpha}~+~z_{1-\beta})^2(\sigma^2)}{\Delta^2}$$
+
+n = `r round((1.96+.8416)^2*20*2/(100), 4)`
+
+The minimum sample size required is 4 in each group.
+
+# Problem 2
+
+## Part a
+
+$$E[{responses}] = np$$ = 14 * .05 = 0.7
+
+## Part b
+
+Go means that there was at least one response in the futility trial and 4 responses in the go-no-go trial.
+
+So, the probability of a go decision is the intersection of 1 response out of 14 and 3 responses out of 20.
+
+The probability of 1 response in the futility trial is = `r round(1 - pbinom(1, 14, .05), 4)`.
+
+The probability of 3 responses in the additional trial is = `r round(1 - pbinom(3, 20, .05), 4)`.
+
+So the probability of a go result is = 0.153 * 0.0159 = `r round(.153*0.0159, 4)`.
+
+## Part c
+
+1-Pr($\ge 1 \cap \ge 3, p = 0.2$) = `r round(1 - pbinom(1, 14, .2)*(1-pbinom(3, 20, .2)), 4)`
+
+## Part d
+
+type I error = .0024, power = .8835
+
+null = 5%, alternative = 20%
+
+n = $$\frac{2(z_{\alpha}~+~z_{1-\beta})^2(\sigma^2)}{\Delta^2}$$
+
+```{r}
+errorI = vector(mode = "list", length = 100)
+power = vector(mode = "list", length = 100)
+res = vector(mode = "list", length = 100)
+for(i in 1:100) {
+  for(j in 1:i) {
+    errorI[[c(i, j)]] = 1 - pbinom(j-1, i, 0.05)
+    power[[c(i, j)]] = 1 - pbinom(j-1, i, 0.2)
+    res[[c(i, j)]] = bind_cols("i" = i, "j" = j, "errorI" = errorI[[c(i, j)]], "power" = power[[c(i, j)]])
+  }
+  res[[i]] = map(res[[i]], ~bind_rows(.))
+}
+
+res %>% 
+  bind_rows() %>%
+  filter(errorI < 0.0024,
+         power > 0.8835)
+```
+
+The sample size 67 with a response of 10 or more subjects satisfies these parameters.
+
+There is `r round(1 - pbinom(10, 67, .05), 5)` chances of this outcome under the null.
+
+Under the alternative, there is `r round(1 - pbinom(10, 67, .2), 4)` probability for this outcome.
+
