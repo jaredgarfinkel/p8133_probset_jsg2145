@@ -50,54 +50,91 @@ The minimum sample size required is 4 in each group.
 
 ## Part a
 
-$$E[{responses}] = np$$ = 14 * .05 = 0.7
+```{r}
+14*pbinom(1, 14, .05) + 34*(1-pbinom(1, 14, .05))
+```
+
+
+The expected value of the sample size is 17.05 ~ 18.
 
 ## Part b
 
 Go means that there was at least one response in the futility trial and 4 responses in the go-no-go trial.
 
-So, the probability of a go decision is the intersection of 1 response out of 14 and 3 responses out of 20.
+```{r}
+gonogo = function(stage1, stage2, null, alt, n1, n2) {
+  res = vector(mode = "list", length = stage1)
+  for(i in 1:stage1) {
+    for(j in 1:stage2){
+      res[[c(i,j)]] = bind_cols("n1_response" = i, "n2_response" = j-i)
+    }
+    res[[i]] = map(res[[i]], ~bind_rows(.))
+  }
 
-The probability of 1 response in the futility trial is = `r round(1 - pbinom(1, 14, .05), 4)`.
+  sum_df = bind_rows(res) %>% 
+    mutate(errorI = dbinom(n1_response, stage1, null) * dbinom(n2_response, stage2, null),
+           power = dbinom(n1_response, stage1, alt) * dbinom(n2_response, stage2, alt)) %>%
+    filter(n1_response > n1-1,
+           n1_response + n2_response > n2-1) %>% 
+    summarize(sum_error = sum(errorI),
+              sum_power = sum(power))
+  
+  return(sum_df)
+}
+```
 
-The probability of 3 responses in the additional trial is = `r round(1 - pbinom(3, 20, .05), 4)`.
+```{r}
+sum_df = gonogo(stage1 = 14, stage2 = 20, null = .05, alt = 0.2, n1 = 1, n2 = 4)
+```
 
-So the probability of a go result is = 0.153 * 0.0159 = `r round(.153*0.0159, 4)`.
+The probability of rejecting the null given that the null is true is `r round(pull(sum_df, sum_error), 4)`.
 
 ## Part c
 
-1-Pr($\ge 1 \cap \ge 3, p = 0.2$) = `r round(1 - pbinom(1, 14, .2)*(1-pbinom(3, 20, .2)), 4)`
+The probability of rejecting the null given that the alternative is true is `r round(pull(sum_df, sum_power), 4)`.
 
 ## Part d
 
-type I error = .0024, power = .8835
+type I error = .0804, power = 0.9041
 
 null = 5%, alternative = 20%
 
 n = $$\frac{2(z_{\alpha}~+~z_{1-\beta})^2(\sigma^2)}{\Delta^2}$$
 
 ```{r}
-errorI = vector(mode = "list", length = 100)
-power = vector(mode = "list", length = 100)
-res = vector(mode = "list", length = 100)
-for(i in 1:100) {
-  for(j in 1:i) {
-    errorI[[c(i, j)]] = 1 - pbinom(j-1, i, 0.05)
-    power[[c(i, j)]] = 1 - pbinom(j-1, i, 0.2)
-    res[[c(i, j)]] = bind_cols("i" = i, "j" = j, "errorI" = errorI[[c(i, j)]], "power" = power[[c(i, j)]])
+fixed = function(maxn, null, alt, error_prev, power_prev) {
+  errorI = vector(mode = "list", length = maxn)
+  power = vector(mode = "list", length = maxn)
+  res = vector(mode = "list", length = maxn)
+  for(i in 1:maxn) {
+    for(j in 1:i) {
+      errorI[[c(i, j)]] = 1 - pbinom(j-1, i, null)
+      power[[c(i, j)]] = 1 - pbinom(j-1, i, alt)
+      res[[c(i, j)]] = bind_cols("i" = i, "j" = j, "errorI" = errorI[[c(i, j)]], "power" = power[[c(i, j)]])
+    }
+    res[[i]] = map(res[[i]], ~bind_rows(.))
   }
-  res[[i]] = map(res[[i]], ~bind_rows(.))
+  
+  fixed_df = res %>% 
+    bind_rows() %>% 
+    filter(errorI < error_prev,
+           power > power_prev)
+  
+  return(fixed_df)
 }
-
-res %>% 
-  bind_rows() %>%
-  filter(errorI < 0.0024,
-         power > 0.8835)
 ```
 
-The sample size 67 with a response of 10 or more subjects satisfies these parameters.
+```{r}
+fixed(maxn = 100, null = 0.05, alt = 0.2, error_prev = 0.0804, power_prev = .9041)
+```
 
-There is `r round(1 - pbinom(10, 67, .05), 5)` chances of this outcome under the null.
 
-Under the alternative, there is `r round(1 - pbinom(10, 67, .2), 4)` probability for this outcome.
+The sample size 32 with a response of 4 or more subjects satisfies these parameters.
 
+There is `r round(1 - pbinom(3, 32, .05), 5)` probability of this outcome under the null.
+
+Under the alternative, there is `r round(1 - pbinom(3, 32, .2), 4)` probability for this outcome.
+
+The number of participants required for a fixed design trial is 2 more than for the adaptive model. 
+
+However, the adaptive model has an expected sample size of only 17, which is 15 fewer than in the fixed design.
