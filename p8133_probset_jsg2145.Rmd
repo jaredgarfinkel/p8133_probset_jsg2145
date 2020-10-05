@@ -8,8 +8,6 @@ output: html_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(viridis)
-library(haven)
-library(readxl)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -31,110 +29,22 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 Given:
 
-H_0 = 0
-H_1 = -10
-variance = 20
+H_0 = 0, no change
+H_1 = -10 mm/dL
+variance = 20 mm/dL
 
 
 The power and type I error rate are needed to calculate the sample size.
+
+We assume that the variable of interest is normally distributed.
 
 We assume that the change in LDL is due to the medication and not some outside factor.
 
 n = $$\frac{2(z_{\alpha}~+~z_{1-\beta})^2(\sigma^2)}{\Delta^2}$$
 
+Using type I error rate of 0.05 and power of 0.8.
+
 n = `r round((1.96+.8416)^2*20*2/(100), 4)`
 
 The minimum sample size required is 4 in each group.
 
-# Problem 2
-
-## Part a
-
-```{r}
-14*pbinom(1, 14, .05) + 34*(1-pbinom(1, 14, .05))
-```
-
-
-The expected value of the sample size is 17.05 ~ 18.
-
-## Part b
-
-Go means that there was at least one response in the futility trial and 4 responses in the go-no-go trial.
-
-```{r}
-gonogo = function(stage1, stage2, null, alt, n1, n2) {
-  res = vector(mode = "list", length = stage1)
-  for(i in 1:stage1) {
-    for(j in 1:stage2){
-      res[[c(i,j)]] = bind_cols("n1_response" = i, "n2_response" = j-i)
-    }
-    res[[i]] = map(res[[i]], ~bind_rows(.))
-  }
-
-  sum_df = bind_rows(res) %>% 
-    mutate(errorI = dbinom(n1_response, stage1, null) * dbinom(n2_response, stage2, null),
-           power = dbinom(n1_response, stage1, alt) * dbinom(n2_response, stage2, alt)) %>%
-    filter(n1_response > n1-1,
-           n1_response + n2_response > n2-1) %>% 
-    summarize(sum_error = sum(errorI),
-              sum_power = sum(power))
-  
-  return(sum_df)
-}
-```
-
-```{r}
-sum_df = gonogo(stage1 = 14, stage2 = 20, null = .05, alt = 0.2, n1 = 1, n2 = 4)
-```
-
-The probability of rejecting the null given that the null is true is `r round(pull(sum_df, sum_error), 4)`.
-
-## Part c
-
-The probability of rejecting the null given that the alternative is true is `r round(pull(sum_df, sum_power), 4)`.
-
-## Part d
-
-type I error = .0804, power = 0.9041
-
-null = 5%, alternative = 20%
-
-n = $$\frac{2(z_{\alpha}~+~z_{1-\beta})^2(\sigma^2)}{\Delta^2}$$
-
-```{r}
-fixed = function(maxn, null, alt, error_prev, power_prev) {
-  errorI = vector(mode = "list", length = maxn)
-  power = vector(mode = "list", length = maxn)
-  res = vector(mode = "list", length = maxn)
-  for(i in 1:maxn) {
-    for(j in 1:i) {
-      errorI[[c(i, j)]] = 1 - pbinom(j-1, i, null)
-      power[[c(i, j)]] = 1 - pbinom(j-1, i, alt)
-      res[[c(i, j)]] = bind_cols("i" = i, "j" = j, "errorI" = errorI[[c(i, j)]], "power" = power[[c(i, j)]])
-    }
-    res[[i]] = map(res[[i]], ~bind_rows(.))
-  }
-  
-  fixed_df = res %>% 
-    bind_rows() %>% 
-    filter(errorI < error_prev,
-           power > power_prev)
-  
-  return(fixed_df)
-}
-```
-
-```{r}
-fixed(maxn = 100, null = 0.05, alt = 0.2, error_prev = 0.0804, power_prev = .9041)
-```
-
-
-The sample size 32 with a response of 4 or more subjects satisfies these parameters.
-
-There is `r round(1 - pbinom(3, 32, .05), 5)` probability of this outcome under the null.
-
-Under the alternative, there is `r round(1 - pbinom(3, 32, .2), 4)` probability for this outcome.
-
-The number of participants required for a fixed design trial is 2 more than for the adaptive model. 
-
-However, the adaptive model has an expected sample size of only 17, which is 15 fewer than in the fixed design.
