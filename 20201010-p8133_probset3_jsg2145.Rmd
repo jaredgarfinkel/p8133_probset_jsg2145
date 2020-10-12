@@ -1,0 +1,128 @@
+---
+title: "20201010-p8133_probset3_jsg2145"
+author: "Jared Garfinkel"
+date: "10/10/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	message = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+# Problem 3
+
+## Part a
+
+The conjugate prior of an exponential distribution with rate, $\lambda$ is a Gamma distribution with paramaters Gamma($\lambda; \alpha, \beta$)
+
+$$\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}exp{-\lambda\beta}$$
+
+The posterior is the likelihood times the conjugate prior.
+
+$$L(\lambda)\Gamma(\lambda; \alpha, \beta)$$
+
+$L(\lambda) = \prod{\lambda{exp(-\lambda}x)} = {\lambda}^nexp(-{\lambda}n\bar{x})$
+
+Therefore,
+
+$p(\lambda) = \lambda^{n}exp(-{\lambda}n\bar{x})\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}exp(-\lambda\beta)$
+
+Rearrange terms to get
+
+= $\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{(\alpha + n)-1}exp(-\lambda(\beta+n\bar{x}))$
+
+The prior predictive distribution is the integral of the posterior distribution with respect to the prior.
+
+So, the prior predictive distribution = $\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{(\alpha + n)-1}exp(-\lambda(\beta+n\bar{x}))$
+
+Removing the first term from the integral as it is not related to lambda, 
+
+$$\frac{\beta^\alpha}{\Gamma(\alpha)}\int_\lambda{\lambda^{(\alpha + n)-1}exp(-\lambda(\beta+n\bar{x}))}$$
+
+By multiplying through by a factor of $\frac{(\beta+n\bar{x})^{\alpha+n}}{\Gamma(\alpha+n)}$,
+
+the integral can be written as:
+
+$$\int_\lambda{\Gamma(\lambda; \alpha+n, \beta+n\bar{x})d\lambda}$$
+
+This simplifies to 1 by the rules of exponential family distributions.
+
+So,
+
+p($\lambda$) = $$\frac{\beta^\alpha}{\Gamma(\alpha)}\frac{\Gamma(\alpha+n)}{(\beta+n\bar{x})^{\alpha+n}}$$
+
+$$\frac{\beta^\alpha}{\Gamma(\alpha)}\frac{\Gamma(\alpha+n)}{(\beta+n\bar{x})^{\alpha+n}}$$
+
+$$\left(\frac{\beta}{\beta+n\bar{x}}\right)^\alpha\left(\frac{1}{\beta+n\bar{x}}\right)^n\frac{\Gamma(\alpha+n)}{\Gamma(\alpha)}$$
+
+```{r, include = FALSE, eval = FALSE}
+# By multiplying through by a factor of $\beta^{n}\left(1+\frac{n\bar{x}}{\beta}\right)^{\alpha+n}\frac{\Gamma(\alpha+n)}{\Gamma(\alpha)}$,
+# # 
+# # the posterior distribution can be written as:
+# # 
+# # p($\lambda$) = $\Gamma(\lambda; \alpha+n, \beta+n\bar{x})$
+# # 
+# $$\int_\lambda{\Gamma(\lambda; \alpha+n, \beta+n\bar{x})d\lambda}$$
+# # 
+# # = $$\int_\lambda{\frac{(\beta+n\bar{x})^{\alpha+n}}{\Gamma(\alpha + n)}\lambda^{\alpha+n-1}exp{-\lambda(\beta+n\bar{X})}}$$
+# # = $$\frac{(\beta+n\bar{x})^{\alpha+n}}{\Gamma(\alpha + n)}\int_\lambda{\lambda^{(\alpha + n)-1}exp(-\lambda(\beta+n\bar{x}))}$$
+# 
+# The integral is equal to 1 by the rules of exponential distribution so the prior predictive distribution can be written as,
+# 
+# = $$\frac{\beta^{\alpha}}{\Gamma(\alpha)}$$
+```
+
+
+## Part b
+
+The posterior predictive distribution of $X_2$ given $X_1$ = 
+
+$$\int{p({X_2}|\lambda)p(\lambda|X_1)d\theta}$$
+
+where $p(\lambda|X_1)$ is the posterior distribution of $X_1$ and $p(X_2|\lambda)$ is the likelihood of $X_2$. So, this can be rewritten as,
+
+$$\int{\lambda^{n}exp(-{\lambda}n\bar{x})\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{(\alpha + n)-1}exp(-\lambda(\beta+n\bar{x}))d\lambda}$$
+
+After rearranging terms, this can be written as,
+
+$$\frac{\beta^\alpha}{\Gamma(\alpha)}\int_\lambda{\lambda^{(\alpha + 2n)-1}exp(-\lambda(\beta+2n\bar{x}))d\lambda}$$
+
+The integral is a gamma distribution, $\Gamma(\lambda; \alpha + 2n, \beta + 2n\bar{x})$, so by multiplying through by a factor of $\frac{(\beta+2n\bar{x})^{\alpha+2n}}{\Gamma(\alpha+2n)}$
+
+The posterior predictive distribution can be found to be,
+
+$$\left(\frac{\beta}{\beta+2n\bar{x}}\right)^\alpha\left(\frac{1}{\beta+2n\bar{x}}\right)^{2n}\frac{\Gamma(\alpha+2n)}{\Gamma(\alpha)}$$
+
+## Part c
+
+$\frac{X_1 + X_2}{2}$ is the mean of $X_1$ and $X_2$
+
+Since they are exchangeable exponential distributions, the mean is equal to $\frac{1}{\lambda}$, where the L($\lambda$) is given above.
+
+So, the likelihood of $\frac{X_1 + X_2}{2}$ is equal to $\lambda^{-n}exp({\lambda}n\bar{x})$.
+
+Using the definition that the posterior predictive distribution = $\int$ likelihood * posterior distribution
+
+$$p(\lambda) = \int_{\lambda} \lambda^{-n}exp({\lambda}n\bar{x})\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{(\alpha + n)-1}exp(-\lambda(\beta+n\bar{x}))$$
+
+This means that the posterior predictive distribution will be $$\frac{\beta^{\alpha}}{\Gamma(\alpha)}\lambda^{\alpha-1}exp(-\lambda\beta)$$.
+
+Which by observation is the gamma distribution, $\Gamma(\lambda; \alpha, \beta)$
+
+This is the same as the conjugate prior. 
