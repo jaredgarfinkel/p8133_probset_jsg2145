@@ -2,7 +2,7 @@
 title: "20201021-p8133_probset4_jsg2145"
 author: "Jared Garfinkel"
 date: "10/21/2020"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
