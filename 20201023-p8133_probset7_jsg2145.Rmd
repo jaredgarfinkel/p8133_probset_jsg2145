@@ -1,0 +1,41 @@
+---
+title: "20201023-p8133_probset7_jsg2145"
+author: "Jared Garfinkel"
+date: "10/23/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+library(dfcrm)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	message = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+```{r}
+target = 0.1
+prior = c(0.05, 0.12, 0.25, 0.40, 0.55)
+trueP = c(0.02, 0.04, 0.10, 0.25, 0.50)
+N = 20
+crmoutput = crmsim(trueP, prior, target, N, 3, nsim = 10, model="logistic")
+```
+
+```{r}
+crmoutput$MTD
+```
+
+
