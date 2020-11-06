@@ -58,11 +58,15 @@ $$\beta = \frac{d}{d\beta}\left(-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigm
 
 and,
 
-$$\epsilon_i = \frac{d}{d\sigma^2}\left(-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigma^2}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2\right)$$
+$$\sigma^2 = \frac{d}{d\sigma^2}\left(-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigma^2}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2\right)$$
 
 = $$\frac{1}{n}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2$$
 
 ## Part b
+
+Given:
+
+$\sigma^2$ is known.
 
 Assume a normal prior for $\alpha$ and $\beta$. 
 
@@ -79,3 +83,24 @@ By observation, this can be written as a normal distribution ~ $$N\left(\frac{1}
 
 ## Part c
 
+If $\alpha$ and $\beta$ are known then the expression of the likelihood for $\sigma^2$ simplifies to $$\frac{1}{n}\sum_{i=1}^{n}(y_i-\bar{y})^2$$, 
+
+so, a conjugate prior of $\sigma^{-2}$ would yield a posterior $\propto$ 1, which can be assumed to be uniform ~U(0,1).
+
+## Part d
+
+If $\alpha$ and $\beta$ are unknown with an uninformative prior, then the conjugate prior is an inverse Gamma distribution.
+
+$$p(\sigma^2) = \frac{\beta^\alpha}{\Gamma(\alpha)}\sigma^{-2(\alpha+1)}exp\left(-\frac{\beta}{\sigma^2}\right)$$
+
+The log-likelihood is then,
+
+$$(y-X\beta)^2 = (y-X\hat{\beta})^2+\left((\beta - \hat{\beta})X\right)^2$$
+
+The likelihood is then re-written as:
+
+$$p(y|X; \alpha, \beta, \sigma^2) \propto (\sigma^2)^{-\nu/2}exp\left(-\frac{\nu{s^2}}{2\sigma^2}\right)(\sigma^2)^{-\frac{n-\nu}{2}}exp\left(-\frac{\left((\beta - \hat{\beta})X\right)^2}{2\sigma^2}\right)$$
+
+$$p(\sigma^2|X) = \frac{1}{n}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2\frac{\beta^\alpha}{\Gamma(\alpha)}\sigma^{2(-(\alpha+1))}exp\left(-\frac{\beta}{\sigma^2}\right)$$
+
+The marginal posterior distribution of $\sigma^2$ can therefore be written as an Inverse Gamma ~ $InvGamma(a_0 + \frac{n}{2}, b_0 + \frac{1}{2}(y^2 + \mu_0^2 - \mu_n^2))$
