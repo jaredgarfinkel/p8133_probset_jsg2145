@@ -1,0 +1,81 @@
+---
+title: "20201106-p8133_probset10_jsg2145"
+author: "Jared Garfinkel"
+date: "11/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+library(dfcrm)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	message = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+# Problem 10 
+
+## Part a
+
+$$Y_i = \alpha + \beta{X_i} + \epsilon_i$$
+
+Find the maximum likelihood of $\alpha,~\beta,~and~\epsilon_i$.
+
+$L(\alpha, \beta, \epsilon_i)$ = ?
+
+= $$\prod_{i = 1}^{n}p(y_i|x_i; \alpha, \beta, \epsilon_i) = \prod_{i = 1}^{n}\frac{1}{\sqrt{2\pi\sigma^2}}{e}^{-\frac{(y_i-(\alpha+\beta{x_i}))^2}{2\sigma^2}}$$
+
+We take the log for convenience:
+
+$$log\prod_{i = 1}^{n}p(y_i|x_i; \alpha, \beta, \epsilon_i)$$
+
+= $$\sum_{i=1}^{n}log~{p(y_i|x_i; \alpha, \beta, \epsilon_i)}$$
+
+= $$-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigma^2}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2$$
+
+So,
+
+$$\alpha = \frac{d}{d\alpha}\left(-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigma^2}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2\right)$$
+
+= $\bar{y}-\beta{x_i}$
+
+$$\beta = \frac{d}{d\beta}\left(-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigma^2}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2\right)$$
+
+= $$\frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^{n}(x_i-\bar{x})^2} = \frac{cov_{X,Y}}{\sigma_X^2}$$
+
+and,
+
+$$\epsilon_i = \frac{d}{d\sigma^2}\left(-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigma^2}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2\right)$$
+
+= $$\frac{1}{n}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2$$
+
+## Part b
+
+Assume a normal prior for $\alpha$ and $\beta$. 
+
+Since the posterior distribution $\propto$ likelihood x prior, 
+
+
+```{r, include = FALSE, eval = FALSE}
+$$p(\alpha, \beta) = \left(-\frac{n}{2}log{2\pi}-nlog\sigma-\frac{1}{2\sigma^2}\sum_{i=1}^{n}(y_i-(\alpha+\beta{x_i}))^2\right)\frac{x^{\alpha-1}(1-x)^{\beta-1}\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}$$
+```
+
+$$p(\alpha, \beta) = \left(\prod_{i = 1}^{n}\frac{1}{\sqrt{2\pi\sigma^2}}{e}^{-\frac{(y_i-(\alpha+\beta{x_i}))^2}{2\sigma^2}}\right)\frac{1}{\sqrt{2\pi\sigma_0^2}}{e}^{-\frac{(y_i-(\alpha+\beta{x_i}))^2}{2\sigma_0^2}}$$
+
+By observation, this can be written as a normal distribution ~ $$N\left(\frac{1}{\frac{1}{\sigma_0^2}+\frac{n}{\sigma^2}}\left(\frac{\mu_0}{\sigma_0^2}+\frac{\sum_{i=1}^{n}x_i}{\sigma^2}\right), \left(\frac{1}{\sigma_0^2}+\frac{n}{\sigma^2}\right)^{-1}\right)$$
+
+## Part c
+
