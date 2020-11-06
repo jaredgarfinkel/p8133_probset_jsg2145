@@ -1,0 +1,47 @@
+---
+title: "20201105-p8133_probset9_jsg2145"
+author: "Jared Garfinkel"
+date: "11/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+library(dfcrm)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	message = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+$X_1,...,X_n$ ~ $N(\mu, 1)$
+
+$p(\mu)$ ~ $N(0, 1)$
+
+The posterior distribution is the likelihood x prior
+
+p(\mu) = $$\frac{1}{\sigma\sqrt{2\pi}}e^{\frac{-1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}$$
+
+The likelihood of $\mu$ is $$\frac{d}{dx}(\frac{n}{2}ln(2\pi)-\frac{n}{2}ln\sigma^2-\frac{1}{2\sigma^2}\sum_{i=1}^n(x_i - \mu)^2)$$
+
+= $$\frac{1}{n}\sum_{i=1}^{n}x_i$$
+
+The prior is $$\frac{1}{\sqrt{2\pi}}e^{-(\frac{x^2}{2})}$$
+
+The posterior is then, $$\frac{1}{n}\sum_{i=1}^{n}x_i\frac{1}{\sqrt{2\pi}}e^{-(\frac{x^2}{2})}$$
+
+Equivalently, the posterior of $\nu$ is, $$\frac{1}{m}\sum_{i=1}^{m}y_i\frac{1}{\sqrt{2\pi}}e^{-(\frac{y^2}{2})}$$
+
+So, the $Pr(\mu > \nu | x_1,...,x_n, y_1,...,y_n)$ can be the difference of $Pr(\mu - \nu) > 0$ or the proportion $Pr(\mu/\nu) > 1$.

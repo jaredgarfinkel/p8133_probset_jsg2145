@@ -37,7 +37,7 @@ The posterior is the likelihood times the conjugate prior.
 
 $$L(\lambda)\Gamma(\lambda; \alpha, \beta)$$
 
-$L(\lambda) = \prod{\lambda{exp(-\lambda}x)} = {\lambda}^nexp(-{\lambda}n\bar{x})$
+$L(\lambda) = \prod{\lambda{exp(-\lambda}x)} = {\lambda}^ne^{-{\lambda}n\bar{x}}$
 
 Therefore,
 
