@@ -1,0 +1,117 @@
+---
+title: "20201107-p8133_probset11_jsg2145"
+author: "Jared Garfinkel"
+date: "11/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+library(dfcrm)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	message = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+# Problem 11
+
+## Part a
+
+The first patient receives 1 of 2 potential treatments with equal probability.
+
+p(A) = p(B) = 0.5
+
+$p(tr = A|tr_{i-1} = A) = 0.2$
+
+$p(tr = A|tr_{i-1} = B) = 0.8$
+
+$p(tr = B|tr_{i-1} = A) = 0.2$
+
+$p(tr = B|tr_{i-1} = B) = 0.8$
+
+From this, the distribution of the first 4 patients can be calculated:
+
+AAAA = 0.5 * 0.2 * 0.2 * 0.2 = 0.004
+AAAB = 0.5 * 0.2 * 0.2 * 0.8 = 0.016
+AABA = 0.5 * 0.2 * 0.8 * 0.2 = 0.016
+ABAA = 0.5 * 0.8 * 0.2 * 0.2 = 0.016
+BAAA = 0.5 * 0.2 * 0.2 * 0.2 = 0.004
+AABB = 0.5 * 0.2 * 0.8 * 0.8 = 0.064
+ABBA = 0.5 * 0.8 * 0.8 * 0.2 = 0.064
+BBAA = 0.5 * 0.8 * 0.2 * 0.2 = 0.016
+ABBB = 0.5 * 0.8 * 0.8 * 0.8 = 0.256
+BBBA = 0.5 * 0.8 * 0.8 * 0.2 = 0.064
+BBBB = 0.5 * 0.8 * 0.8 * 0.8 = 0.256
+BBAB = 0.5 * 0.8 * 0.2 * 0.8 = 0.064
+BABB = 0.5 * 0.2 * 0.8 * 0.8 = 0.064
+BAAB = 0.5 * 0.2 * 0.2 * 0.8 = 0.016
+BABA = 0.5 * 0.2 * 0.8 * 0.2 = 0.016
+ABAB = 0.5 * 0.8 * 0.2 * 0.8 = 0.064
+
+P(B = 0) = 0.004
+P(B = 1) = 0.016 + 0.016 + 0.016 + 0.004 = .052
+P(B = 2) = 0.064 + 0.064 + 0.016 + 0.016 + 0.016 + 0.064 = 0.24
+P(B = 3) = 0.256 + 0.064 + 0.064 + 0.064 = .448
+P(B = 4) = 0.256
+
+0.004 + 0.052 + .24 + .256 + .448 = 1
+
+```{r}
+tibble(B = c(0:4),
+       Pr = c(.004,0.052,0.24,0.448,0.256)) %>% 
+  ggplot(aes(x = B, y = Pr)) +
+  geom_bar(stat = "identity")
+```
+
+E[B] = 0 * 0.004 + 1 * 0.052 + 2 * 0.24 + 3 * 0.448 + 4 * 0.256 = `r 0 * 0.004 + 1 * 0.052 + 2 * 0.24 + 3 * 0.448 + 4 * 0.256`
+
+A balanced design would have 2 patients in each treatment group compared to an average of 2.9 in Zelen's play-the-winner design.
+
+## Part b
+
+AAAA = 0.5 * 0.3 * 0.3 * 0.3 = 0.0135
+AAAB = 0.5 * 0.3 * 0.3 * 0.7 = 0.0315
+AABA = 0.5 * 0.3 * 0.7 * 0.7 = 0.0735
+ABAA = 0.5 * 0.7 * 0.7 * 0.3 = 0.0735
+BAAA = 0.5 * 0.7 * 0.3 * 0.3 = 0.0315
+AABB = 0.5 * 0.3 * 0.7 * 0.3 = 0.0315
+ABBA = 0.5 * 0.7 * 0.3 * 0.7 = 0.0735
+BBAA = 0.5 * 0.3 * 0.7 * 0.3 = 0.0315
+ABBB = 0.5 * 0.7 * 0.3 * 0.3 = 0.0315
+BBBA = 0.5 * 0.3 * 0.3 * 0.7 = 0.0315
+BBBB = 0.5 * 0.3 * 0.3 * 0.3 = 0.0135
+BBAB = 0.5 * 0.3 * 0.7 * 0.7 = 0.0735
+BABB = 0.5 * 0.7 * 0.7 * 0.3 = 0.0735
+BAAB = 0.5 * 0.7 * 0.3 * 0.7 = 0.0735
+BABA = 0.5 * 0.7 * 0.7 * 0.7 = 0.1715
+ABAB = 0.5 * 0.7 * 0.7 * 0.7 = 0.1715
+
+P(B = 0) = 0.0135
+P(B = 1) = 0.0315 + 0.0735 + 0.0735 + 0.0315 = 0.21
+P(B = 2) = 0.0315 + .0735 + 0.0315 + 0.0735 + 0.1715 + 0.1715 = .553
+P(B = 3) = 0.0315 + 0.0315 + 0.0735 + 0.0735 = 0.21
+P(B = 4) = 0.0135
+
+```{r}
+tibble(B = c(0:4),
+       Pr = c(0.0135,0.21,0.553,0.21,0.0135)) %>% 
+  ggplot(aes(x = B, y = Pr)) +
+  geom_bar(stat = "identity")
+```
+
+E[B] = 0 * 0.0135 + 1 * 0.21 + 2 * 0.553 + 3 * 0.21 + 4 * 0.0135 = `r 0 * 0.0135 + 1 * 0.21 + 2 * 0.553 + 3 * 0.21 + 4 * 0.0135`
+
+When both treatments have a probability of response of 0.3 the expected value of the distribution of B is the same as the balanced design.
