@@ -1,0 +1,61 @@
+---
+title: "20201210-p8133_probset13_jsg2145"
+author: "Jared Garfinkel"
+date: "12/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	message = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+# Problem 13
+
+## Part a
+
+$X_1$ ~ $N(\mu{t_1,~1})$ $\perp$ $X_2$ ~ $N(\mu{t_2,~1})$
+
+Z = $\omega_1X_1$ + $\omega_2X_2$
+
+$\omega_1^2 + \omega_2^2 = 1$
+
+w, t > 0
+
+Z = $\omega_1\mu{t_1} + \omega_2\mu{t_2} = \mu(\omega_1t_1 + \omega_2t_2)$
+
+$H_0: \mu = \frac{Z}{\omega_1t_1 + \omega_2t_2} = 0$
+
+Since w, t > 0,
+
+$H_0: Z = 0$
+
+The type I error rate is given by the alpha value of the z-statistic. It is 0.025.
+
+## Part b
+
+The power is the probability that the null will be rejected given that the null is false.
+
+$P(\frac{Z}{\omega_1t_1 + \omega_2t_2}>0|\mu > 0)$
+
+Z ~ $N(\mu(\omega_1t_1 + \omega_2t_2),~2)$
+
+Z ~ $\frac{1}{\sqrt{2\pi\sigma^2}}exp{-\frac{1}{2}\left(\frac{x-\mu(\omega_1t_1 + \omega_2t_2)}{2}\right)^2}$
+
+## Part c
+
