@@ -2,7 +2,7 @@
 title: "20201210-p8133_probset13_jsg2145"
 author: "Jared Garfinkel"
 date: "12/10/2020"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -37,25 +37,73 @@ $\omega_1^2 + \omega_2^2 = 1$
 
 w, t > 0
 
-Z = $\omega_1\mu{t_1} + \omega_2\mu{t_2} = \mu(\omega_1t_1 + \omega_2t_2)$
+$Pr(|Z| > z_{0.025}) ~ N(\mu(\omega_1t_1+\omega_2t_2),~2) > z_{0.025}$
 
-$H_0: \mu = \frac{Z}{\omega_1t_1 + \omega_2t_2} = 0$
+```{r}
+errI = 1 - pnorm(0.9875, sd = sqrt(2))
+```
 
-Since w, t > 0,
-
-$H_0: Z = 0$
-
-The type I error rate is given by the alpha value of the z-statistic. It is 0.025.
+The type I error rate is `r round(errI, 4)`.
 
 ## Part b
 
 The power is the probability that the null will be rejected given that the null is false.
 
-$P(\frac{Z}{\omega_1t_1 + \omega_2t_2}>0|\mu > 0)$
+Z ~ $N(\mu(\omega_1t_1 + \omega_2t_2,~2))$
 
-Z ~ $N(\mu(\omega_1t_1 + \omega_2t_2),~2)$
+$\frac{Z - \mu(\omega_1t_1 + \omega_2t_2)}{\sqrt{2}}$ ~ $N(0, 1)$
 
-Z ~ $\frac{1}{\sqrt{2\pi\sigma^2}}exp{-\frac{1}{2}\left(\frac{x-\mu(\omega_1t_1 + \omega_2t_2)}{2}\right)^2}$
+```{r}
+errI2 = (1 - pnorm(0.9875))*sqrt(2)
+```
+
+The power is `r round(errI2, 4)` + $\mu(\omega_1t_1 + \omega_2t_2)$.
 
 ## Part c
 
+By intuition, $\omega_1 = \omega_2 = \sqrt{0.5}$
+
+## Part d
+
+Given: $\mu$ = 0
+
+Z ~ N(0, 2)
+
+$X_1$ ~ N(0, 1)
+
+$Pr(X_1 > z_{0.005}~or~Z > z_{0.02}) \le 0.025$
+
+$Pr(X_1 > z_{0.005})$
+
+$Pr(Z > z_{0.025})$
+
+```{r, include = FALSE, eval = FALSE}
+dnorm(0.98, sd = sqrt(2)) # Z > z_0.025, 0.2218814
+qnorm(0.98, sd = sqrt(2)) # 2.90444, most strict
+qnorm(0.995) # X_1 > z_0.005, 2.575829
+1 - pnorm(2.90444) # so, if x_1 > z_0.005, |Z| > z_0.02?
+1 - pnorm(2.575829)
+
+# This should add to < 0.25?
+dnorm(0.975, sd = sqrt(2))
+qnorm(.975, sd = sqrt(2)) # 2.771808, more strict
+qnorm(0.995) # 2.575829
+1 - pnorm(2.771808)
+1 - pnorm(2.575829)
+```
+
+The left-hand equation will be smaller because the alpha value is smaller. Therefore, fewer observations will satisfy the inequality in the left-hand equation compared to the right hand equation.
+
+## Part e
+
+```{r}
+errI3 = (1-pnorm(0.99))*sqrt(2)
+```
+
+The value of the power will be `r round(errI3, 4)` + $\mu(\omega_1t_1 + \omega_2t_2)$.
+
+A smaller value of alpha may affect the power of the test. However, power and type I error measure different things. 
+
+One tests a null when the null is true and the power tests the null when the alternative is true.
+
+The test still depends on $\mu$, $\omega$, and t.
